@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { useForm } from './useForm';
+import { useFetch } from './useFetch';
 
-function App() {
+const App = () => {
+  const [values, handleChange] = useForm({
+    email: '',
+    password: '',
+    firstName: ''
+  });
+
+  const [count, setCount] = useState(() =>
+    JSON.parse(localStorage.getItem('count'))
+  );
+  const { factsData, loading } = useFetch(
+    `http://numbersapi.com/${count}/trivia`
+  );
+
+  const handleIncremenet = () => {
+    setCount(currentCount => currentCount + 1);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('count', JSON.stringify(count));
+  }, [count]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button onClick={handleIncremenet}>Increment</button>
+      {loading ? 'Loading...' : factsData}
+      {/* <input
+        type="email"
+        placeholder="email"
+        name="email"
+        value={values.email}
+        onChange={handleChange}
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="password"
+        value={values.password}
+        onChange={handleChange}
+      />
+      <input
+        type="text"
+        name="firstName"
+        placeholder="name"
+        value={values.firstName}
+        onChange={handleChange}
+      /> */}
     </div>
   );
-}
-
+};
 export default App;
