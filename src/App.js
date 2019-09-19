@@ -1,55 +1,34 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useMemo } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { Index } from './pages';
+import { About } from './pages/about';
+//import { UserContext } from './UserContext';
 
-const ADD_TODO = 'ADD_TODO';
-const TOGGLE_TODO = 'TOGGLE_TODO';
+function AppRouter() {
+  const [user, setUser] = useState(null);
 
-function reducer(state, action) {
-  //react the action and change the state accordingly
-  switch (action.type) {
-    case ADD_TODO:
-      return {
-        todoCount: state.todoCount + 1,
-        todos: [...state.todos, { text: action.text, completed: false }]
-      };
-    case TOGGLE_TODO:
-      return {
-        todos: state.todos.map((todo, id) =>
-          id === action.id ? { ...todo, completed: !todo.completed } : todo
-        ),
-        todoCount: state.todoCount
-      };
-    default:
-      return state;
-  }
-}
-const App = () => {
-  const [{ todos, todoCount }, dispatch] = useReducer(reducer, {
-    todos: [],
-    todoCount: 0
-  });
-  const [text, setText] = useState('');
+  const value = useMemo(() => ({ user, setUser }), [user, setUser]);
+
   return (
-    <div>
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          dispatch({ type: ADD_TODO, text });
-          setText('');
-        }}
-      >
-        <input value={text} onChange={e => setText(e.target.value)}></input>
-      </form>
-      {todos.map((t, i) => (
-        <li
-          style={{ opacity: t.completed ? '0.5' : '1' }}
-          key={i}
-          onClick={() => dispatch({ type: TOGGLE_TODO, id: i })}
-        >
-          {t.text}
-        </li>
-      ))}
-      {todoCount}
-    </div>
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about/">About</Link>
+            </li>
+          </ul>
+        </nav>
+        <UserContext.Provider value={value}>
+          <Route path="/" exact component={Index} />
+          <Route path="/about/" component={About} />
+        </UserContext.Provider>
+      </div>
+    </Router>
   );
-};
-export default App;
+}
+
+export default AppRouter;
