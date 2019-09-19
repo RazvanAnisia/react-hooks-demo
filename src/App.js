@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from './useForm';
 import { useFetch } from './useFetch';
 
@@ -8,6 +8,8 @@ const App = () => {
     password: '',
     firstName: ''
   });
+
+  const inputRef = useRef();
 
   const [count, setCount] = useState(() =>
     JSON.parse(localStorage.getItem('count'))
@@ -23,11 +25,13 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('count', JSON.stringify(count));
   }, [count]);
+
   return (
     <div>
       <button onClick={handleIncremenet}>Increment</button>
       {loading ? 'Loading...' : factsData}
-      {/* <input
+      <input
+        ref={inputRef}
         type="email"
         placeholder="email"
         name="email"
@@ -47,7 +51,8 @@ const App = () => {
         placeholder="name"
         value={values.firstName}
         onChange={handleChange}
-      /> */}
+      />
+      <button onClick={() => inputRef.current.focus()}>focus</button>
     </div>
   );
 };
